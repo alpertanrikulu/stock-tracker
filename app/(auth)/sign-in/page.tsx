@@ -5,11 +5,15 @@ import FooterLink from "@/components/forms/FooterLink";
 import InputField from "@/components/forms/InputField";
 import SelectField from "@/components/forms/SelectField";
 import { Button } from "@/components/ui/button";
+import { signInWithEmail } from "@/lib/actions/auth.actions";
 import { INVESTMENT_GOALS, RISK_TOLERANCE_OPTIONS } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const SignIn = () => {
+  const router = useRouter()
   const {
       register,
       handleSubmit,
@@ -23,13 +27,17 @@ const SignIn = () => {
       mode: "onBlur",
     });
   
-    const onSubmit = async (data: SignInFormData) => {
-      try {
-        console.log(data);
-      } catch (e) {
-        console.log(e);
-      }
-    };
+  const onSubmit = async (data: SignInFormData) => {
+    try {
+      const result = await signInWithEmail(data);
+      if(result.success) router.push("/");
+    } catch (e) {
+      console.log(e);
+      toast.error('Sign in failed!', {
+        description: e instanceof Error ? e.message : "Failed to sign in."
+      })
+    }
+  };
 
   return (
     <>
